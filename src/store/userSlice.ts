@@ -6,8 +6,8 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  token: '',
-  username: '',
+  token: localStorage.getItem('token') || '',
+  username: localStorage.getItem('username') || '',
 };
 
 const userSlice = createSlice({
@@ -17,10 +17,14 @@ const userSlice = createSlice({
     setUser: (state, action: PayloadAction<{ token: string; username: string }>) => {
       state.token = action.payload.token;
       state.username = action.payload.username;
+      localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('username', action.payload.username);
     },
     logout: (state) => {
       state.token = '';
       state.username = '';
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
     },
   },
 });
