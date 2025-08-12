@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Box, Typography, Paper, Button, Chip, Skeleton, Alert, Pagination } from '@mui/material';
 import ProductCard from '../components/ProductCard';
-import axios from 'axios';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { RootState } from '../store';
+import { fetchProducts } from '../store/productSlice';
 
 const categories = ['T-Shirts', 'Jeans', 'Shirts', 'Shorts'];
 const colors = ['Red', 'Blue', 'Green', 'Black', 'White'];
@@ -12,39 +15,24 @@ interface ProductListProps {
   onDetail: (product: any) => void;
 }
 
-function useQuery() {
-  return new URLSearchParams(window.location.search);
-}
 
 const ProductList: React.FC<ProductListProps> = ({ onDetail }) => {
-  const [products, setProducts] = useState<any[]>([]);
+  const dispatch = useAppDispatch();
+  const { products, loading, error } = useAppSelector((state: RootState) => state.products);
   const [filter, setFilter] = useState({ category: '', price: [0, 1000000], colors: [], sizes: [], search: '' } as any);
-  const query = useQuery();
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  // loading dan error diambil dari redux state
 
+  const location = useLocation();
   useEffect(() => {
-    setLoading(true);
-    setError('');
-    const search = query.get('search') || '';
-    const url = search
-      ? `http://localhost:8000/products?search=${encodeURIComponent(search)}`
-      : 'http://localhost:8000/products';
-    axios.get(url)
-      .then(res => {
-        setProducts(res.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('Gagal mengambil data produk');
-        setLoading(false);
-      });
-  }, [query.get('search')]);
+    const params = new URLSearchParams(location.search);
+    const search = params.get('search') || '';
+    dispatch(fetchProducts(search));
+  }, [dispatch, location.search]);
 
   useEffect(() => {
     setPage(1);
-  }, [query]);
+  }, []);
 
   const filteredProducts = useMemo(() => {
     return products.filter((p: any) => {
@@ -52,11 +40,7 @@ const ProductList: React.FC<ProductListProps> = ({ onDetail }) => {
       const matchPrice = p.price >= filter.price[0] && p.price <= filter.price[1];
       const matchColor = filter.colors.length === 0 || filter.colors.includes(p.color);
       const matchSize = filter.sizes.length === 0 || filter.sizes.includes(p.size);
-      const matchSearch = !filter.search ||
-        p.name?.toLowerCase().includes(filter.search.toLowerCase()) ||
-        p.category?.toLowerCase().includes(filter.search.toLowerCase()) ||
-        p.description?.toLowerCase().includes(filter.search.toLowerCase());
-      return matchCategory && matchPrice && matchColor && matchSize && matchSearch;
+      return matchCategory && matchPrice && matchColor && matchSize;
     });
   }, [products, filter]);
 

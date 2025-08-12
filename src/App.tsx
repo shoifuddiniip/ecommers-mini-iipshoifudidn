@@ -27,10 +27,10 @@ function AppRoutes() {
   }, [user.id, user.token, dispatch]);
   return (
     <Routes>
-      <Route path="/login" element={user.token ? <Navigate to="/dashboard" /> : <Login />} />
-      <Route path="/dashboard" element={user.token ? <Dashboard /> : <Navigate to="/login" />} />
-      <Route path="/" element={user.token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
-      <Route path="/products" element={user.token ? <Products /> : <Navigate to="/login" />} />
+  <Route path="/login" element={user.token ? <Navigate to="/products" /> : <Login />} />
+  <Route path="/dashboard" element={user.token ? <Dashboard /> : <Navigate to="/login" />} />
+  <Route path="/" element={user.token ? <Navigate to="/products" /> : <Navigate to="/login" />} />
+  <Route path="/products" element={user.token ? <Products /> : <Navigate to="/login" />} />
       <Route path="/orders" element={user.token ? <Orders /> : <Navigate to="/login" />} />
       <Route path="/profile" element={user.token ? <Profile /> : <Navigate to="/login" />} />
       <Route path="/cart" element={user.token ? <Cart /> : <Navigate to="/login" />} />
