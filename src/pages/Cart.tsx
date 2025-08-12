@@ -8,7 +8,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { IMAGE_URL } from '../utils/imageurl';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
-import { removeFromCart, updateQty, fetchCartFromBackend } from '../store/cartSlice';
+import { removeFromCart, updateQty, fetchCartFromBackend, syncCartToBackend } from '../store/cartSlice';
 
 const DELIVERY_FEE = 15;
 const DISCOUNT_RATE = 0.2;
@@ -25,15 +25,27 @@ const Cart: React.FC = () => {
     }
   }, [user.id, user.token, dispatch]);
 
-  const handleQty = (id: string, delta: number) => {
+  const handleQty = async (id: string, delta: number) => {
     const item = cart.find(i => i.id === id);
     if (!item) return;
     const newQty = Math.max(1, item.qty + delta);
     dispatch(updateQty({ id, qty: newQty }));
+    // Sync ke backend
+    if (user.id && user.token) {
+      const updatedCart = cart.map(i =>
+        i.id === id ? { ...i, qty: newQty } : i
+      );
+      dispatch(syncCartToBackend({ userId: user.id, items: updatedCart, token: user.token }));
+    }
   };
 
   const handleRemove = (id: string) => {
     dispatch(removeFromCart(id));
+    // Sync ke backend
+    if (user.id && user.token) {
+      const updatedCart = cart.filter(i => i.id !== id);
+      dispatch(syncCartToBackend({ userId: user.id, items: updatedCart, token: user.token }));
+    }
   };
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);

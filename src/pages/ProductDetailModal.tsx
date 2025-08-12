@@ -3,9 +3,8 @@ import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { IMAGE_URL } from '../utils/imageurl';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '../store/cartSlice';
-import { RootState } from '../store';
-import { updateCart } from '../api/cartApi';
+import { addToCart, syncCartToBackend } from '../store/cartSlice';
+import { RootState, AppDispatch } from '../store';
 
 interface ProductDetailModalProps {
   product: any;
@@ -15,7 +14,7 @@ interface ProductDetailModalProps {
 const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClose }) => {
   const [qty, setQty] = React.useState(1);
   const maxQty = product.stock || 99;
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.user);
   const cart = useSelector((state: RootState) => state.cart.items);
   const handleCheckout = async () => {
@@ -32,26 +31,21 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClos
       productId: Number(productId),
       userId: user.id,
     };
-    dispatch(addToCart(cartItem));
-    // update backend cart
-    try {
-      // Pastikan semua item di cart memiliki productId number
-      const mappedCart = cart
-        .filter((item: any) => String(item.productId) !== String(productId))
-        .map((item: any) => ({
-          ...item,
-          productId: Number(item.productId !== undefined ? item.productId : item.id),
-        }));
-      await updateCart(
-        user.id,
-        [
-          ...mappedCart,
-          cartItem
-        ],
-        user.token
+    // Buat array cart terbaru secara manual
+    const existing = cart.find((item: any) => String(item.productId) === String(productId));
+    let latestCart;
+    if (existing) {
+      latestCart = cart.map((item: any) =>
+        String(item.productId) === String(productId)
+          ? { ...item, qty: item.qty + qty }
+          : item
       );
-    } catch (e) {
-      // handle error (optional)
+    } else {
+      latestCart = [...cart, cartItem];
+    }
+    dispatch(addToCart(cartItem));
+    if (user.id && user.token) {
+      dispatch(syncCartToBackend({ userId: user.id, items: latestCart, token: user.token }));
     }
     onClose();
   };

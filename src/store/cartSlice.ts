@@ -1,23 +1,23 @@
 
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { getCart } from '../api/cartApi';
+import { getCart, updateCart } from '../api/cartApi';
 
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  size: string;
-  color: string;
-  qty: number;
-  productId: number;
-}
+// Interface CartItem sudah didefinisikan secara global di src/interface/items.d.ts
 // Async thunk untuk fetch cart dari backend
 export const fetchCartFromBackend = createAsyncThunk(
   'cart/fetchCart',
   async ({ userId, token }: { userId: string; token: string }) => {
     const data = await getCart(userId, token);
     return data as CartItem[];
+  }
+);
+
+// Thunk untuk sync cart ke backend
+export const syncCartToBackend = createAsyncThunk(
+  'cart/syncCart',
+  async ({ userId, items, token }: { userId: string; items: CartItem[]; token: string }) => {
+    await updateCart(userId, items, token);
+    return items;
   }
 );
 
@@ -34,7 +34,11 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction<CartItem>) => {
-      const idx = state.items.findIndex(item => item.id === action.payload.id);
+      const idx = state.items.findIndex(item =>
+        item.productId === action.payload.productId &&
+        item.size === action.payload.size &&
+        item.color === action.payload.color
+      );
       if (idx >= 0) {
         state.items[idx].qty += action.payload.qty;
       } else {
@@ -56,6 +60,9 @@ const cartSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(fetchCartFromBackend.fulfilled, (state, action) => {
+      state.items = action.payload;
+    });
+    builder.addCase(syncCartToBackend.fulfilled, (state, action) => {
       state.items = action.payload;
     });
   },
