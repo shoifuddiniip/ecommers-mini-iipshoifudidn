@@ -74,7 +74,7 @@ const Navbar: React.FC = () => {
       </Box>
       {/* Right: Icons */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <IconButton size="large" sx={{ color: '#222' }}>
+        <IconButton size="large" sx={{ color: '#222' }} component={Link} to="/cart">
           <ShoppingCartOutlinedIcon fontSize="medium" />
         </IconButton>
         <Box>
