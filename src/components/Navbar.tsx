@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
 import { logout } from '../store/userSlice';
@@ -13,7 +13,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 const Navbar: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [onUserOpen, setOnUserOpen] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -23,7 +24,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-  <Box sx={{ maxWidth: '100vw', bgcolor: '#fff', borderBottom: '1px solid #eee', px: 4, py: 0, height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <Box sx={{ maxWidth: '100vw', bgcolor: '#fff', borderBottom: '1px solid #eee', px: 4, py: 0, height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       {/* Left: Logo & Menu */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: 1, mr: 3 }}>
@@ -56,9 +57,15 @@ const Navbar: React.FC = () => {
         <IconButton size="large" sx={{ color: '#222' }}>
           <ShoppingCartOutlinedIcon fontSize="medium" />
         </IconButton>
-        <IconButton size="large" sx={{ color: '#222' }}>
-          <AccountCircleOutlinedIcon fontSize="medium" />
-        </IconButton>
+        <Box>
+          <IconButton size="large" sx={{ color: '#222' }} onClick={e => setOnUserOpen(e.currentTarget)}>
+            <AccountCircleOutlinedIcon fontSize="medium" />
+          </IconButton>
+          <Menu anchorEl={onUserOpen} open={Boolean(onUserOpen)} onClose={() => setOnUserOpen(null)} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
+            <MenuItem disabled>{user.username}</MenuItem>
+            <MenuItem onClick={() => { dispatch(logout()); handleClose(); }}>Logout</MenuItem>
+          </Menu>
+        </Box>
       </Box>
     </Box>
   );
