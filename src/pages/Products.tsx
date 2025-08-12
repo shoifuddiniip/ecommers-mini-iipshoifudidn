@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import {
   Box,
@@ -22,9 +23,14 @@ const colors = ['Red', 'Blue', 'Green', 'Black', 'White'];
 const sizes = ['S', 'M', 'L', 'XL'];
 const PAGE_SIZE = 10;
 
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
 const Products: React.FC = () => {
   const [products, setProducts] = useState<any[]>([]);
-  const [filter, setFilter] = useState({ category: '', price: [0, 1000000], colors: [], sizes: [] } as any);
+  const [filter, setFilter] = useState({ category: '', price: [0, 1000000], colors: [], sizes: [], search: '' } as any);
+  const query = useQuery();
   const [page, setPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -33,7 +39,11 @@ const Products: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     setError('');
-    axios.get('http://localhost:8000/products')
+    const search = query.get('search') || '';
+    const url = search
+      ? `http://localhost:8000/products?search=${encodeURIComponent(search)}`
+      : 'http://localhost:8000/products';
+    axios.get(url)
       .then(res => {
         setProducts(res.data);
         setLoading(false);
@@ -42,7 +52,13 @@ const Products: React.FC = () => {
         setError('Gagal mengambil data produk');
         setLoading(false);
       });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query.get('search')]);
+
+    // Reset page ke 1 saat query berubah
+    useEffect(() => {
+      setPage(1);
+    }, [query]);
 
   const filteredProducts = useMemo(() => {
     return products.filter((p: any) => {
@@ -50,7 +66,11 @@ const Products: React.FC = () => {
       const matchPrice = p.price >= filter.price[0] && p.price <= filter.price[1];
       const matchColor = filter.colors.length === 0 || filter.colors.includes(p.color);
       const matchSize = filter.sizes.length === 0 || filter.sizes.includes(p.size);
-      return matchCategory && matchPrice && matchColor && matchSize;
+      const matchSearch = !filter.search ||
+        p.name?.toLowerCase().includes(filter.search.toLowerCase()) ||
+        p.category?.toLowerCase().includes(filter.search.toLowerCase()) ||
+        p.description?.toLowerCase().includes(filter.search.toLowerCase());
+      return matchCategory && matchPrice && matchColor && matchSize && matchSearch;
     });
   }, [products, filter]);
 

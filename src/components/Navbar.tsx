@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
 import { logout } from '../store/userSlice';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Box, Button, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
@@ -15,6 +15,8 @@ const Navbar: React.FC = () => {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [onUserOpen, setOnUserOpen] = useState<null | HTMLElement>(null);
+  const [search, setSearch] = useState('');
+  const navigate = useNavigate();
   const open = Boolean(anchorEl);
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -47,10 +49,28 @@ const Navbar: React.FC = () => {
       </Box>
       {/* Center: Search */}
       <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', mx: 4 }}>
-        <Box sx={{ width: 400, maxWidth: '100%', bgcolor: '#f4f4f4', borderRadius: 99, display: 'flex', alignItems: 'center', px: 2, py: 0.5 }}>
-          <SearchIcon sx={{ color: '#aaa', mr: 1 }} />
-          <InputBase placeholder="Search for products..." sx={{ flex: 1, fontSize: 16, color: '#222' }} inputProps={{ 'aria-label': 'search' }} />
-        </Box>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            if (search.trim()) {
+              navigate(`/products?search=${encodeURIComponent(search.trim())}`);
+            } else {
+              navigate('/products');
+            }
+          }}
+          style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+        >
+          <Box sx={{ width: 400, maxWidth: '100%', bgcolor: '#f4f4f4', borderRadius: 99, display: 'flex', alignItems: 'center', px: 2, py: 0.5 }}>
+            <SearchIcon sx={{ color: '#aaa', mr: 1 }} />
+            <InputBase
+              placeholder="Search for products..."
+              sx={{ flex: 1, fontSize: 16, color: '#222' }}
+              inputProps={{ 'aria-label': 'search' }}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </Box>
+        </form>
       </Box>
       {/* Right: Icons */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
