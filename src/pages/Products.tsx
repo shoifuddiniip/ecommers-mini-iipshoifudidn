@@ -67,7 +67,11 @@ const Products: React.FC = () => {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        padding: '20px',
+      }}
+    >
       <Box display="flex" gap={3}>
         {/* Filter Sidebar */}
         <Paper sx={{ width: 240, p: 2, borderRadius: 3, boxShadow: 1, display: { xs: 'none', md: 'block' } }}>
