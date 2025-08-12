@@ -1,6 +1,9 @@
+
 import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { IMAGE_URL } from '../utils/imageurl';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../store/cartSlice';
 
 interface ProductDetailModalProps {
   product: any;
@@ -10,16 +13,9 @@ interface ProductDetailModalProps {
 const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClose }) => {
   const [qty, setQty] = React.useState(1);
   const maxQty = product.stock || 99;
+  const dispatch = useDispatch();
   const handleCheckout = () => {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const idx = cart.findIndex((item: any) => item.id === product.id);
-    if (idx >= 0) {
-      cart[idx].qty += qty;
-    } else {
-      cart.push({ ...product, qty });
-    }
-    localStorage.setItem('cart', JSON.stringify(cart));
-    alert('Produk berhasil dimasukkan ke keranjang!');
+    dispatch(addToCart({ ...product, qty }));
     onClose();
   };
   return (

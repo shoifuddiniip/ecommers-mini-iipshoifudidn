@@ -1,72 +1,32 @@
-import React, { useState } from 'react';
+
+
+import React from 'react';
 import { Box, Typography, Paper, Button, IconButton, Divider, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { IMAGE_URL } from '../utils/imageurl';
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  size: string;
-  color: string;
-  qty: number;
-}
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../store';
+import { removeFromCart, updateQty } from '../store/cartSlice';
 
 const DELIVERY_FEE = 15;
 const DISCOUNT_RATE = 0.2;
 
 const Cart: React.FC = () => {
+  const cart = useSelector((state: RootState) => state.cart.items);
+  const dispatch = useDispatch();
+  const [promo, setPromo] = React.useState('');
 
-  const [cart, setCart] = useState<CartItem[]>([
-    {
-      id: '1',
-      name: 'Gradient Graphic T-shirt',
-      price: 145,
-      image: 'tshirt1.png',
-      size: 'Large',
-      color: 'White',
-      qty: 1
-    },
-    {
-      id: '2',
-      name: 'Checkered Shirt',
-      price: 180,
-      image: 'shirt1.png',
-      size: 'Medium',
-      color: 'Red',
-      qty: 1
-    },
-    {
-      id: '3',
-      name: 'Skinny Fit Jeans',
-      price: 240,
-      image: 'jeans1.png',
-      size: 'Large',
-      color: 'Blue',
-      qty: 1
-    }
-  ]);
-  const [promo, setPromo] = useState('');
-
-  const updateQty = (id: string, delta: number) => {
-    setCart(prev => {
-      const updated = prev.map(item =>
-        item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item
-      );
-      localStorage.setItem('cart', JSON.stringify(updated));
-      return updated;
-    });
+  const handleQty = (id: string, delta: number) => {
+    const item = cart.find(i => i.id === id);
+    if (!item) return;
+    const newQty = Math.max(1, item.qty + delta);
+    dispatch(updateQty({ id, qty: newQty }));
   };
 
-  const removeItem = (id: string) => {
-    setCart(prev => {
-      const updated = prev.filter(item => item.id !== id);
-      localStorage.setItem('cart', JSON.stringify(updated));
-      return updated;
-    });
+  const handleRemove = (id: string) => {
+    dispatch(removeFromCart(id));
   };
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -93,11 +53,11 @@ const Cart: React.FC = () => {
                   <Typography fontWeight={700} fontSize={18} mt={1}>${item.price}</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" gap={1}>
-                  <IconButton onClick={() => updateQty(item.id, -1)}><RemoveIcon /></IconButton>
+                  <IconButton onClick={() => handleQty(item.id, -1)}><RemoveIcon /></IconButton>
                   <Typography fontWeight={700}>{item.qty}</Typography>
-                  <IconButton onClick={() => updateQty(item.id, 1)}><AddIcon /></IconButton>
+                  <IconButton onClick={() => handleQty(item.id, 1)}><AddIcon /></IconButton>
                 </Box>
-                <IconButton onClick={() => removeItem(item.id)} color="error" sx={{ ml: 2 }}>
+                <IconButton onClick={() => handleRemove(item.id)} color="error" sx={{ ml: 2 }}>
                   <DeleteIcon />
                 </IconButton>
               </Box>
