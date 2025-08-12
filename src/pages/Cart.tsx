@@ -7,16 +7,23 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { IMAGE_URL } from '../utils/imageurl';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store';
-import { removeFromCart, updateQty } from '../store/cartSlice';
+import { RootState, AppDispatch } from '../store';
+import { removeFromCart, updateQty, fetchCartFromBackend } from '../store/cartSlice';
 
 const DELIVERY_FEE = 15;
 const DISCOUNT_RATE = 0.2;
 
 const Cart: React.FC = () => {
   const cart = useSelector((state: RootState) => state.cart.items);
-  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch<AppDispatch>();
   const [promo, setPromo] = React.useState('');
+
+  React.useEffect(() => {
+    if (user.id && user.token) {
+      dispatch(fetchCartFromBackend({ userId: user.id, token: user.token }));
+    }
+  }, [user.id, user.token, dispatch]);
 
   const handleQty = (id: string, delta: number) => {
     const item = cart.find(i => i.id === id);

@@ -2,8 +2,10 @@
 import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { IMAGE_URL } from '../utils/imageurl';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../store/cartSlice';
+import { RootState } from '../store';
+import { updateCart } from '../api/cartApi';
 
 interface ProductDetailModalProps {
   product: any;
@@ -14,8 +16,43 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClos
   const [qty, setQty] = React.useState(1);
   const maxQty = product.stock || 99;
   const dispatch = useDispatch();
-  const handleCheckout = () => {
-    dispatch(addToCart({ ...product, qty }));
+  const user = useSelector((state: RootState) => state.user);
+  const cart = useSelector((state: RootState) => state.cart.items);
+  const handleCheckout = async () => {
+    // Pastikan productId selalu ada dan bertipe number
+    const productId = product.productId !== undefined ? product.productId : product.id;
+    const cartItem = {
+      id: String(product.id),
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      size: product.size,
+      color: product.color,
+      qty,
+      productId: Number(productId),
+      userId: user.id,
+    };
+    dispatch(addToCart(cartItem));
+    // update backend cart
+    try {
+      // Pastikan semua item di cart memiliki productId number
+      const mappedCart = cart
+        .filter((item: any) => String(item.productId) !== String(productId))
+        .map((item: any) => ({
+          ...item,
+          productId: Number(item.productId !== undefined ? item.productId : item.id),
+        }));
+      await updateCart(
+        user.id,
+        [
+          ...mappedCart,
+          cartItem
+        ],
+        user.token
+      );
+    } catch (e) {
+      // handle error (optional)
+    }
     onClose();
   };
   return (

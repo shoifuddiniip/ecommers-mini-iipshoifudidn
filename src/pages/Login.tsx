@@ -33,7 +33,12 @@ const Login: React.FC = () => {
           'Content-Type': 'application/json'
         }
       });
-      dispatch(setUser({ token: res.data.token, username }));
+      dispatch(setUser({
+        id: String(res.data.userId),
+        fullname: res.data.fullname,
+        username: res.data.username,
+        token: res.data.token
+      }));
       navigate('/');
     } catch (err: any) {
       if (err.response && err.response.status === 401) {

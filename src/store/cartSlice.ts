@@ -1,4 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { getCart } from '../api/cartApi';
 
 interface CartItem {
   id: string;
@@ -8,7 +10,16 @@ interface CartItem {
   size: string;
   color: string;
   qty: number;
+  productId: number;
 }
+// Async thunk untuk fetch cart dari backend
+export const fetchCartFromBackend = createAsyncThunk(
+  'cart/fetchCart',
+  async ({ userId, token }: { userId: string; token: string }) => {
+    const data = await getCart(userId, token);
+    return data as CartItem[];
+  }
+);
 
 interface CartState {
   items: CartItem[];
@@ -42,6 +53,11 @@ const cartSlice = createSlice({
     clearCart: (state) => {
       state.items = [];
     },
+  },
+  extraReducers: builder => {
+    builder.addCase(fetchCartFromBackend.fulfilled, (state, action) => {
+      state.items = action.payload;
+    });
   },
 });
 
