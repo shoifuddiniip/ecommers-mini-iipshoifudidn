@@ -5,6 +5,7 @@ import { RootState } from '../store';
 import { logout } from '../store/userSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, Button, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
+import Badge from './Badge';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
@@ -12,6 +13,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const Navbar: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
+  const cartCount = useSelector((state: RootState) => state.cart.items.reduce((sum, item) => sum + item.qty, 0));
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [onUserOpen, setOnUserOpen] = useState<null | HTMLElement>(null);
@@ -75,7 +77,9 @@ const Navbar: React.FC = () => {
       {/* Right: Icons */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <IconButton size="large" sx={{ color: '#222' }} component={Link} to="/cart">
-          <ShoppingCartOutlinedIcon fontSize="medium" />
+          <Badge color="error" badgeContent={cartCount > 0 ? cartCount : undefined} invisible={cartCount === 0} overlap="circular">
+            <ShoppingCartOutlinedIcon fontSize="medium" />
+          </Badge>
         </IconButton>
         <Box>
           <IconButton size="large" sx={{ color: '#222' }} onClick={e => setOnUserOpen(e.currentTarget)}>
