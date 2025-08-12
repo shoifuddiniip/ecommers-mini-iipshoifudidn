@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../store/userSlice';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { login as loginApi } from '../api/authApi';
 import {
   Box, Button, TextField, Typography, Alert, Paper, InputAdornment, IconButton, Divider, Link as MuiLink
 } from '@mui/material';
@@ -25,19 +25,12 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError('');
     try {
-      // Basic Auth header
-      const basicAuth = 'Basic ' + btoa(`${username}:${password}`);
-      const res = await axios.post('http://localhost:8000/login', null, {
-        headers: {
-          Authorization: basicAuth,
-          'Content-Type': 'application/json'
-        }
-      });
+      const res = await loginApi(username, password);
       dispatch(setUser({
-        id: String(res.data.userId),
-        fullname: res.data.fullname,
-        username: res.data.username,
-        token: res.data.token
+        id: String(res.userId),
+        fullname: res.fullname,
+        username: res.username,
+        token: res.token
       }));
       navigate('/');
     } catch (err: any) {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Box, Typography, List, ListItem, ListItemText, Card, CardContent, CircularProgress, Alert } from '@mui/material';
+import { getOrders } from '../api/orderApi';
 
 interface Order {
   id: number;
@@ -16,21 +17,16 @@ const Orders: React.FC = () => {
   const token = useSelector((state: RootState) => state.user.token);
 
   useEffect(() => {
-  fetch('http://localhost:8000/orders', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Gagal mengambil data');
-        return res.json();
-      })
-      .then(data => {
+    (async () => {
+      try {
+        const data = await getOrders(token);
         setOrders(data);
         setLoading(false);
-      })
-      .catch(() => {
+      } catch (err) {
         setError('Gagal mengambil data pesanan');
         setLoading(false);
-      });
+      }
+    })();
   }, [token]);
 
   return (

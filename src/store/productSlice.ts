@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { getProducts } from '../api/productApi';
 
 export interface Product {
   id: string;
@@ -28,11 +28,8 @@ const initialState: ProductState = {
 export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
   async (search: string = '') => {
-    const url = search
-      ? `http://localhost:8000/products?search=${encodeURIComponent(search)}`
-      : 'http://localhost:8000/products';
-    const res = await axios.get(url);
-    return res.data as Product[];
+    const data = await getProducts(search);
+    return data as Product[];
   }
 );
 
