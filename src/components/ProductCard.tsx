@@ -1,15 +1,15 @@
 import React from 'react';
 import { Card, CardMedia, CardContent, Typography, CardActions, Button, Box } from '@mui/material';
+import { IMAGE_URL } from '../utils/imageurl';
 
 const ProductCard = React.memo(({ product, onDetail }: { product: any, onDetail: (p: any) => void }) => (
-  <Card sx={{ height: 260, minWidth: 180, maxWidth: 220, display: 'flex', flexDirection: 'column', borderRadius: 2, boxShadow: 1 }}>
+  <Card sx={{ height: 270, minWidth: 180, maxWidth: 220, display: 'flex', flexDirection: 'column', borderRadius: 2, boxShadow: 1 }}>
     <CardMedia 
       component="img" 
-      height="110" 
-      image={product.image || 'https://via.placeholder.com/220x120?text=No+Image'} 
+      image={ IMAGE_URL + product.image || 'https://via.placeholder.com/220x120?text=No+Image'} 
       alt={product.name} 
       loading="lazy"
-      sx={{ objectFit: 'cover' }}
+      sx={{ objectFit: 'fill', width: '100%', height: 140 }}
     />
     <CardContent sx={{ flexGrow: 1, p: 1, pb: 0.5 }}>
       <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ fontSize: '0.85rem', lineHeight: 1.2 }} noWrap>
