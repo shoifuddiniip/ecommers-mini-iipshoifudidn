@@ -20,11 +20,11 @@ const ProductCard = React.memo(({ product, onDetail }: { product: any, onDetail:
       </Typography>
       <Box display="flex" alignItems="center" justifyContent="space-between" mt={0.5}>
         <Typography variant="subtitle1" color="primary" fontWeight={700} sx={{ fontSize: '0.95rem' }}>
-          ${product.price}
+          Rp{product.price.toLocaleString('id-ID')}
         </Typography>
         {product.originalPrice && (
           <Typography variant="caption" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
-            ${product.originalPrice}
+            Rp{product.originalPrice.toLocaleString('id-ID')}
           </Typography>
         )}
       </Box>

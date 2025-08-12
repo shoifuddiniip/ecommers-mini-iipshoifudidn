@@ -69,7 +69,7 @@ const Cart: React.FC = () => {
                   <Typography fontWeight={700}>{item.name}</Typography>
                   <Typography fontSize={15} color="text.secondary">Size: {item.size}</Typography>
                   <Typography fontSize={15} color="text.secondary">Color: {item.color}</Typography>
-                  <Typography fontWeight={700} fontSize={18} mt={1}>${item.price}</Typography>
+                  <Typography fontWeight={700} fontSize={18} mt={1}>Rp{item.price.toLocaleString('id-ID')}</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" gap={1}>
                   <IconButton onClick={() => handleQty(item.id, -1)}><RemoveIcon /></IconButton>
@@ -88,20 +88,20 @@ const Cart: React.FC = () => {
           <Typography variant="h6" fontWeight={700} mb={2}>Order Summary</Typography>
           <Box display="flex" justifyContent="space-between" mb={1}>
             <Typography>Subtotal</Typography>
-            <Typography fontWeight={700}>${subtotal}</Typography>
+            <Typography fontWeight={700}>Rp{subtotal.toLocaleString('id-ID')}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" mb={1}>
             <Typography>Discount (-20%)</Typography>
-            <Typography color="error.main" fontWeight={700}>-${discount}</Typography>
+            <Typography color="error.main" fontWeight={700}>-Rp{discount.toLocaleString('id-ID')}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" mb={2}>
             <Typography>Delivery Fee</Typography>
-            <Typography fontWeight={700}>${DELIVERY_FEE}</Typography>
+            <Typography fontWeight={700}>Rp{DELIVERY_FEE.toLocaleString('id-ID')}</Typography>
           </Box>
           <Divider sx={{ mb: 2 }} />
           <Box display="flex" justifyContent="space-between" mb={2}>
             <Typography fontWeight={700}>Total</Typography>
-            <Typography fontWeight={900} fontSize={22}>${total}</Typography>
+            <Typography fontWeight={900} fontSize={22}>Rp{total.toLocaleString('id-ID')}</Typography>
           </Box>
           <Box display="flex" gap={1} mb={2}>
             <TextField
