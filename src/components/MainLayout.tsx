@@ -8,7 +8,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div>
       {user.token && <Navbar />}
-      <div style={{maxWidth:600,margin:'32px auto'}}>{children}</div>
+      <div style={{margin:'32px auto'}}>{children}</div>
     </div>
   );
 };
