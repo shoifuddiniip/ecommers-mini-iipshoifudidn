@@ -1,51 +1,66 @@
+
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
 import { logout } from '../store/userSlice';
 import { Link } from 'react-router-dom';
-import Button from '@mui/material/Button';
+import { Box, Button, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const Navbar: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
-    <header style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 32px',height:64,background:'#fff',borderBottom:'1px solid #eee'}}>
-      <div style={{display:'flex',alignItems:'center',gap:8}}>
-        <div style={{width:28,height:28,background:'#7fffd4',borderRadius:4,marginRight:8}}></div>
-        <span style={{fontWeight:700,fontSize:22}}>Stellar</span>
-      </div>
-      <div style={{display:'flex',alignItems:'center',gap:24}}>
-        <span style={{fontSize:20,cursor:'pointer'}}>🔍</span>
-        <span style={{fontSize:20,cursor:'pointer'}}>🛒</span>
-        <span style={{fontSize:20,cursor:'pointer'}}>📊</span>
-        <span style={{fontSize:20,cursor:'pointer',position:'relative'}}>💬<span style={{position:'absolute',top:-8,right:-8,background:'red',color:'#fff',borderRadius:'50%',fontSize:10,padding:'2px 5px'}}>1</span></span>
-        <div style={{borderLeft:'1px solid #eee',height:24,margin:'0 16px'}}></div>
-        <span role="img" aria-label="us" style={{fontSize:18}}>🇺🇸</span>
-        <span style={{marginLeft:4,marginRight:8}}>English ▼</span>
-        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="avatar" style={{width:32,height:32,borderRadius:'50%',objectFit:'cover',marginRight:8}} />
-        <span style={{fontWeight:500}}>{user.username} ▼</span>
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          sx={{
-            marginLeft: 2,
-            borderRadius: 99,
-            textTransform: 'none',
-            fontWeight: 600,
-            boxShadow: 'none',
-            background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
-            '&:hover': {
-              background: 'linear-gradient(90deg, #38f9d7 0%, #43e97b 100%)',
-              boxShadow: 'none',
-            },
-          }}
-          onClick={() => dispatch(logout())}
-        >
-          Logout
-        </Button>
-      </div>
-    </header>
+  <Box sx={{ maxWidth: '100vw', bgcolor: '#fff', borderBottom: '1px solid #eee', px: 4, py: 0, height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* Left: Logo & Menu */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: 1, mr: 3 }}>
+          SHOP.CO
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={handleMenu}>
+            <Typography sx={{ fontWeight: 500, fontSize: 16 }}>Shop</Typography>
+            <ExpandMoreIcon fontSize="small" />
+          </Box>
+          <Menu anchorEl={anchorEl} open={open} onClose={handleClose} MenuListProps={{ sx: { minWidth: 140 } }}>
+            <MenuItem onClick={handleClose}>Men</MenuItem>
+            <MenuItem onClick={handleClose}>Women</MenuItem>
+            <MenuItem onClick={handleClose}>Kids</MenuItem>
+          </Menu>
+          <Typography sx={{ fontWeight: 500, fontSize: 16, cursor: 'pointer' }}>On Sale</Typography>
+          <Typography sx={{ fontWeight: 500, fontSize: 16, cursor: 'pointer' }}>New Arrivals</Typography>
+          <Typography sx={{ fontWeight: 500, fontSize: 16, cursor: 'pointer' }}>Brands</Typography>
+        </Box>
+      </Box>
+      {/* Center: Search */}
+      <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', mx: 4 }}>
+        <Box sx={{ width: 400, maxWidth: '100%', bgcolor: '#f4f4f4', borderRadius: 99, display: 'flex', alignItems: 'center', px: 2, py: 0.5 }}>
+          <SearchIcon sx={{ color: '#aaa', mr: 1 }} />
+          <InputBase placeholder="Search for products..." sx={{ flex: 1, fontSize: 16, color: '#222' }} inputProps={{ 'aria-label': 'search' }} />
+        </Box>
+      </Box>
+      {/* Right: Icons */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <IconButton size="large" sx={{ color: '#222' }}>
+          <ShoppingCartOutlinedIcon fontSize="medium" />
+        </IconButton>
+        <IconButton size="large" sx={{ color: '#222' }}>
+          <AccountCircleOutlinedIcon fontSize="medium" />
+        </IconButton>
+      </Box>
+    </Box>
   );
 };
 
