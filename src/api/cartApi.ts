@@ -16,7 +16,7 @@ export const getCart = async (userId: string, token: string) => {
 export const updateCart = async (userId: string, items: CartItem[], token: string) => {
   const mappedItems = items.map(item => ({
     ...item,
-    id: String(item.id), // id harus string sesuai backend
+    id: item.id, // id harus number sesuai backend
     productId: Number(item.productId),
   }));
   // Log payload sebelum request

@@ -29,7 +29,7 @@ const Cart: React.FC = () => {
     }
   }, [user.id, user.token, dispatch]);
 
-  const handleQty = async (id: string, delta: number) => {
+  const handleQty = async (id: number, delta: number) => {
     const item = cart.find(i => i.id === id);
     if (!item) return;
     const newQty = Math.max(1, item.qty + delta);
@@ -43,7 +43,7 @@ const Cart: React.FC = () => {
     }
   };
 
-  const handleRemove = (id: string) => {
+  const handleRemove = (id: number) => {
     dispatch(removeFromCart(id));
     // Sync ke backend
     if (user.id && user.token) {

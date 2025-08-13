@@ -21,7 +21,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClos
     // Pastikan productId selalu ada dan bertipe number
     const productId = product.productId !== undefined ? product.productId : product.id;
     const cartItem = {
-      id: String(product.id),
+      id: product.id,
       name: product.name,
       price: product.price,
       image: product.image,
