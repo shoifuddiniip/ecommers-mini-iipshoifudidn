@@ -9,6 +9,8 @@ import { IMAGE_URL } from '../utils/imageurl';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import { removeFromCart, updateQty, fetchCartFromBackend, syncCartToBackend } from '../store/cartSlice';
+import { createOrder } from '../api/orderApi';
+import { useNavigate } from 'react-router-dom';
 
 const DELIVERY_FEE = 15;
 const DISCOUNT_RATE = 0.2;
@@ -18,6 +20,8 @@ const Cart: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch<AppDispatch>();
   const [promo, setPromo] = React.useState('');
+  const navigate = useNavigate();
+  const [loadingCheckout, setLoadingCheckout] = React.useState(false);
 
   React.useEffect(() => {
     if (user.id && user.token) {
@@ -51,6 +55,43 @@ const Cart: React.FC = () => {
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const discount = Math.round(subtotal * DISCOUNT_RATE);
   const total = subtotal - discount + DELIVERY_FEE;
+
+  const handleCheckout = async () => {
+    if (!user.id || !user.token || cart.length === 0) return;
+    setLoadingCheckout(true);
+    try {
+      const orderPayload = {
+        userId: user.id,
+        items: cart.map(item => ({
+          productId: Number(item.productId),
+          name: item.name,
+          qty: Number(item.qty),
+          price: Number(item.price),
+          size: item.size,
+          color: item.color
+        })),
+        subtotal: Number(subtotal),
+        discount: Number(discount),
+        deliveryFee: Number(DELIVERY_FEE),
+        total: Number(total),
+        promoCode: promo ? promo : null
+      };
+      console.log('ORDER PAYLOAD:', orderPayload);
+      const res = await createOrder(orderPayload, user.token);
+      navigate(`/payment/${res.orderId}`, { state: { paymentCode: res.paymentCode } });
+    } catch (err: any) {
+      if (err?.response?.data?.message) {
+        alert('Gagal membuat order: ' + err.response.data.message);
+      } else if (err?.response?.data) {
+        alert('Gagal membuat order: ' + JSON.stringify(err.response.data));
+      } else {
+        alert('Gagal membuat order.');
+      }
+      console.error('ORDER ERROR:', err);
+    } finally {
+      setLoadingCheckout(false);
+    }
+  };
 
   return (
     <Box sx={{ maxWidth: 1100, mx: 'auto', mt: 4, mb: 6 }}>
@@ -120,8 +161,10 @@ const Cart: React.FC = () => {
             size="large"
             fullWidth
             sx={{ borderRadius: 99, fontWeight: 700, fontSize: 18, py: 1.5 }}
+            onClick={handleCheckout}
+            disabled={loadingCheckout || cart.length === 0}
           >
-            Go to Checkout &rarr;
+            {loadingCheckout ? 'Processing...' : 'Go to Checkout →'}
           </Button>
         </Paper>
       </Box>

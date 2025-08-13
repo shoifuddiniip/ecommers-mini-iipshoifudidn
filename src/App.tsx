@@ -10,10 +10,23 @@ import { fetchCartFromBackend } from './store/cartSlice';
 import Login from './pages/Login';
 import Products from './pages/Products';
 import Orders from './pages/Orders';
+import OrderDetail from './pages/OrderDetail';
 import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
 import MainLayout from './components/MainLayout';
 import Cart from './pages/Cart';
+
+import PaymentCode from './pages/PaymentCode';
+import { useLocation, useParams } from 'react-router-dom';
+
+// Wrapper untuk ambil kode pembayaran dari state/location
+const PaymentCodeWrapper = () => {
+  const location = useLocation();
+  const { orderId } = useParams();
+  // Ambil kode dari location.state (hasil navigate dari Cart)
+  const code = location.state?.paymentCode || orderId;
+  return <PaymentCode code={code} />;
+};
 
 const useTypedSelector: typeof useSelector = useSelector;
 
@@ -27,13 +40,15 @@ function AppRoutes() {
   }, [user.id, user.token, dispatch]);
   return (
     <Routes>
-  <Route path="/login" element={user.token ? <Navigate to="/products" /> : <Login />} />
-  <Route path="/dashboard" element={user.token ? <Dashboard /> : <Navigate to="/login" />} />
-  <Route path="/" element={user.token ? <Navigate to="/products" /> : <Navigate to="/login" />} />
-  <Route path="/products" element={user.token ? <Products /> : <Navigate to="/login" />} />
-      <Route path="/orders" element={user.token ? <Orders /> : <Navigate to="/login" />} />
+      <Route path="/login" element={user.token ? <Navigate to="/products" /> : <Login />} />
+      <Route path="/dashboard" element={user.token ? <Dashboard /> : <Navigate to="/login" />} />
+      <Route path="/" element={user.token ? <Navigate to="/products" /> : <Navigate to="/login" />} />
+      <Route path="/products" element={user.token ? <Products /> : <Navigate to="/login" />} />
+  <Route path="/orders" element={user.token ? <Orders /> : <Navigate to="/login" />} />
+  <Route path="/orders/:orderId" element={user.token ? <OrderDetail /> : <Navigate to="/login" />} />
       <Route path="/profile" element={user.token ? <Profile /> : <Navigate to="/login" />} />
       <Route path="/cart" element={user.token ? <Cart /> : <Navigate to="/login" />} />
+      <Route path="/payment/:orderId" element={user.token ? <PaymentCodeWrapper /> : <Navigate to="/login" />} />
     </Routes>
   );
 }
