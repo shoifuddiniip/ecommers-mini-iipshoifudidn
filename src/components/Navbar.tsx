@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
 import { logout } from '../store/userSlice';
 import { Link, useNavigate } from 'react-router-dom';
-import { Box, Button, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
+import { Box, IconButton, InputBase, Menu, MenuItem, Typography } from '@mui/material';
 import Badge from './Badge';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
@@ -32,7 +32,12 @@ const Navbar: React.FC = () => {
     <Box sx={{ maxWidth: '100vw', bgcolor: '#fff', borderBottom: '1px solid #eee', px: 4, py: 0, height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       {/* Left: Logo & Menu */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: 1, mr: 3 }}>
+        <Typography
+          variant="h5"
+          fontWeight={900}
+          sx={{ letterSpacing: 1, mr: 3, cursor: 'pointer' }}
+          onClick={() => navigate('/products')}
+        >
           SHOP.CO
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
