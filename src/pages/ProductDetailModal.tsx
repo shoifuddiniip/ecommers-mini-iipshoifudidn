@@ -16,7 +16,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClos
   const maxQty = product.stock || 99;
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state.user);
-  const cart = useSelector((state: RootState) => state.cart.items);
+  const cart = useSelector((state: RootState) => Array.isArray(state.cart.items) ? state.cart.items : []);
   const handleCheckout = async () => {
     // Pastikan productId selalu ada dan bertipe number
     const productId = product.productId !== undefined ? product.productId : product.id;

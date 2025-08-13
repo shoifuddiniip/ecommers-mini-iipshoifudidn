@@ -16,7 +16,7 @@ const DELIVERY_FEE = 15;
 const DISCOUNT_RATE = 0.2;
 
 const Cart: React.FC = () => {
-  const cart = useSelector((state: RootState) => state.cart.items);
+  const cart = useSelector((state: RootState) => Array.isArray(state.cart.items) ? state.cart.items : []);
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch<AppDispatch>();
   const [promo, setPromo] = React.useState('');
@@ -30,6 +30,7 @@ const Cart: React.FC = () => {
   }, [user.id, user.token, dispatch]);
 
   const handleQty = async (id: number, delta: number) => {
+    if (!Array.isArray(cart)) return;
     const item = cart.find(i => i.id === id);
     if (!item) return;
     const newQty = Math.max(1, item.qty + delta);
@@ -44,6 +45,7 @@ const Cart: React.FC = () => {
   };
 
   const handleRemove = (id: number) => {
+    if (!Array.isArray(cart)) return;
     dispatch(removeFromCart(id));
     // Sync ke backend
     if (user.id && user.token) {
@@ -52,7 +54,7 @@ const Cart: React.FC = () => {
     }
   };
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const subtotal = Array.isArray(cart) ? cart.reduce((sum, item) => sum + item.price * item.qty, 0) : 0;
   const discount = Math.round(subtotal * DISCOUNT_RATE);
   const total = subtotal - discount + DELIVERY_FEE;
 
