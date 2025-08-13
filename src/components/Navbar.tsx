@@ -8,6 +8,7 @@ import { Box, Button, IconButton, InputBase, Menu, MenuItem, Typography } from '
 import Badge from './Badge';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -76,6 +77,9 @@ const Navbar: React.FC = () => {
       </Box>
       {/* Right: Icons */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <IconButton size="large" sx={{ color: '#222' }} component={Link} to="/orders" title="Daftar Pesanan">
+          <ListAltOutlinedIcon fontSize="medium" />
+        </IconButton>
         <IconButton size="large" sx={{ color: '#222' }} component={Link} to="/cart">
           <Badge color="error" badgeContent={cartCount > 0 ? cartCount : undefined} invisible={cartCount === 0} overlap="circular">
             <ShoppingCartOutlinedIcon fontSize="medium" />

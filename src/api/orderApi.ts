@@ -22,8 +22,8 @@ export const confirmPayment = async (orderId: string, paymentCode: string, token
   return res.data;
 };
 
-export const getOrders = async (token: string) => {
-  const res = await axios.get(`${API_URL}/orders`, {
+export const getOrders = async (userId: string, token: string) => {
+  const res = await axios.get(`${API_URL}/orders?userId=${userId}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return res.data;

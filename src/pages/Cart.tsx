@@ -77,8 +77,10 @@ const Cart: React.FC = () => {
         promoCode: promo ? promo : null
       };
       console.log('ORDER PAYLOAD:', orderPayload);
-      const res = await createOrder(orderPayload, user.token);
-      navigate(`/payment/${res.orderId}`, { state: { paymentCode: res.paymentCode } });
+  const res = await createOrder(orderPayload, user.token);
+  // Clear cart setelah checkout berhasil
+  dispatch({ type: 'cart/clearCart' });
+  navigate(`/payment/${res.orderId}`, { state: { paymentCode: res.paymentCode } });
     } catch (err: any) {
       if (err?.response?.data?.message) {
         alert('Gagal membuat order: ' + err.response.data.message);
