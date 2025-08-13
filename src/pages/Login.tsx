@@ -52,6 +52,7 @@ const Login: React.FC = () => {
         height: '100vh',
         background: 'linear-gradient(135deg, #6dd5ed 0%, #c471f5 100%)',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 0,
@@ -138,6 +139,20 @@ const Login: React.FC = () => {
           <MuiLink href="#" underline="hover" sx={{ fontWeight: 700 }}>
             SIGN UP
           </MuiLink>
+        </Box>
+      </Paper>
+      {/* Card info akun demo */}
+      <Paper elevation={2} sx={{ p: 2, borderRadius: 3, minWidth: 350, maxWidth: 380, mt: 3 }}>
+        <Typography variant="h6" fontWeight={700} mb={1} align="center">Account</Typography>
+        <Box display="flex" flexDirection="column" gap={1}>
+          <Box display="flex" justifyContent="space-between">
+            <Typography color="text.secondary">Username:</Typography>
+            <Typography fontWeight={700}>demo</Typography>
+          </Box>
+          <Box display="flex" justifyContent="space-between">
+            <Typography color="text.secondary">Password:</Typography>
+            <Typography fontWeight={700}>demo123</Typography>
+          </Box>
         </Box>
       </Paper>
     </Box>
