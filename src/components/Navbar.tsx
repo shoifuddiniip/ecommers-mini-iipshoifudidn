@@ -14,7 +14,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const Navbar: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
-  const cartCount = useSelector((state: RootState) => state.cart.items.reduce((sum, item) => sum + item.qty, 0));
+  const cartCount = useSelector((state: RootState) => Array.isArray(state.cart.items) ? state.cart.items.reduce((sum, item) => sum + item.qty, 0) : 0);
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [onUserOpen, setOnUserOpen] = useState<null | HTMLElement>(null);
